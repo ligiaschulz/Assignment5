@@ -159,5 +159,11 @@ namespace Assignment5.Controllers
         {
           return (_context.Song?.Any(e => e.SongId == id)).GetValueOrDefault();
         }
+
+        //Browse
+        public IActionResult Browse()
+        {
+            return View();
+        }
     }
 }
