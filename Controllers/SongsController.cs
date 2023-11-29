@@ -161,8 +161,40 @@ namespace Assignment5.Controllers
         }
 
         //Browse
-        public IActionResult Browse()
+        public IActionResult Browse(string searchGenre, string searchArtist)
         {
+            //Get genres to add to dropdown
+            List < SelectListItem > genres = new List<SelectListItem>();
+
+            var songGenres = from s in _context.Song //select all genres from all songs
+                             select s.Genre;
+
+            IEnumerable<string> distinctGenre = songGenres.Distinct();  //LINQ distinct function
+            
+            foreach (var genre in distinctGenre) //add distinct genres to dropdown list
+            {
+                genres.Add(new SelectListItem { Text = genre, Value = genre });
+            }
+
+            ViewBag.Genre = genres;
+            List<SelectListItem> artists = new List<SelectListItem>();
+
+            //Get artists to add to dropdown if genre is selected
+            if (!String.IsNullOrEmpty(searchGenre))
+            {
+
+                var songArtists = from s in _context.Song
+                                  where s.Genre == searchGenre
+                                  select s.Artist;
+                IEnumerable<string> distinctArtist = songArtists.Distinct();  //LINQ distinct function
+                foreach (var artist in distinctArtist)
+                {
+                    genres.Add(new SelectListItem { Text = artist, Value = artist });
+                }
+
+            }
+            ViewBag.Artist = artists;
+
             return View();
         }
     }
