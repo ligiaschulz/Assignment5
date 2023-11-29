@@ -161,41 +161,40 @@ namespace Assignment5.Controllers
         }
 
         //Browse
-        public IActionResult Browse(string searchGenre, string searchArtist)
+        public async Task<IActionResult> Browse(string SongGenre, string SongArtist)
         {
-            //Get genres to add to dropdown
-            List < SelectListItem > genres = new List<SelectListItem>();
+            //Get genres to add to dropdown.
+            IQueryable<string> genreQuery = from m in _context.Song
+                                            orderby m.Genre
+                                            select m.Genre;
 
-            var songGenres = from s in _context.Song //select all genres from all songs
-                             select s.Genre;
+            //Get artists to add to dropdown
+            IQueryable<string> artistQuery = from m in _context.Song
+                            where m.Genre == SongGenre
+                            orderby m.Artist
+                            select m.Artist;
+            var songs = from m in _context.Song
+                         select m;
 
-            IEnumerable<string> distinctGenre = songGenres.Distinct();  //LINQ distinct function
-            
-            foreach (var genre in distinctGenre) //add distinct genres to dropdown list
+            if (!string.IsNullOrEmpty(SongGenre))
             {
-                genres.Add(new SelectListItem { Text = genre, Value = genre });
+                songs = songs.Where(x => x.Genre == SongGenre);
             }
 
-            ViewBag.Genre = genres;
-            List<SelectListItem> artists = new List<SelectListItem>();
-
-            //Get artists to add to dropdown if genre is selected
-            if (!String.IsNullOrEmpty(searchGenre))
+            if (!string.IsNullOrEmpty(SongArtist))
             {
-
-                var songArtists = from s in _context.Song
-                                  where s.Genre == searchGenre
-                                  select s.Artist;
-                IEnumerable<string> distinctArtist = songArtists.Distinct();  //LINQ distinct function
-                foreach (var artist in distinctArtist)
-                {
-                    genres.Add(new SelectListItem { Text = artist, Value = artist });
-                }
-
+                songs = songs.Where(x => x.Artist == SongArtist);
             }
-            ViewBag.Artist = artists;
 
-            return View();
+            var browseSongVM = new BrowseSongViewModel
+            {
+                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Artists = new SelectList(await artistQuery.Distinct().ToListAsync()),
+                Songs = await songs.ToListAsync()
+            };
+
+            return View(browseSongVM);
+
         }
     }
 }

@@ -1,35 +1,59 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model Assignment5.Models.BrowseSongViewModel
 @{
     ViewData["Title"] = "Browse";
 }
 <h1>Browse Music</h1>
 <hr />
-<fieldset>
+<form asp-controller="Songs" asp-action="Browse" method="get">
+    <p>
 
-    Genre: &nbsp;
-
-    @Html.DropDownList("Genre")
-
-</fieldset>
-<fieldset>
-
-    Artist: &nbsp;
-
-    @Html.DropDownList("Artist")
-
-</fieldset>
-<asp:GridView ID="GridView1" runat="server" CellPadding="4" ForeColor="#333333" GridLines="None">
-    <AlternatingRowStyle BackColor="White" />
-    <EditRowStyle BackColor="#2461BF" />
-    <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
-    <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
-    <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
-    <RowStyle BackColor="#EFF3FB" />
-    <SelectedRowStyle BackColor="#D1DDF1" Font-Bold="True" ForeColor="#333333" />
-    <SortedAscendingCellStyle BackColor="#F5F7FB" />
-    <SortedAscendingHeaderStyle BackColor="#6D95E1" />
-    <SortedDescendingCellStyle BackColor="#E9EBEF" />
-    <SortedDescendingHeaderStyle BackColor="#4870BE" />
-</asp:GridView>
+        Genre: <select asp-for="SongGenre" asp-items="Model.Genres">
+            <option value="">All</option>
+        </select>
+        Artist: <select asp-for="SongArtist" asp-items="Model.Artists">
+            <option value="">All</option>
+        </select>
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Songs![0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Songs![0].Artist)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Songs![0].Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Songs![0].Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Songs!)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Artist)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
