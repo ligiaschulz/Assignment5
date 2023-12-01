@@ -163,28 +163,52 @@ namespace Assignment5.Controllers
         //Browse
         public async Task<IActionResult> Browse(string SongGenre, string SongArtist)
         {
+            ViewBag.ShowSongs = false;
+            ViewBag.ShowArtists = false;
+
             //Get genres to add to dropdown.
             IQueryable<string> genreQuery = from m in _context.Song
                                             orderby m.Genre
                                             select m.Genre;
 
-            //Get artists to add to dropdown
-            IQueryable<string> artistQuery = from m in _context.Song
-                            where m.Genre == SongGenre
-                            orderby m.Artist
-                            select m.Artist;
+            //Get aritsts to add to dropdown
+            IQueryable<string> artistQuery;
+
+            if (SongGenre == "All")
+            {
+                artistQuery = from m in _context.Song
+                              orderby m.Artist
+                              select m.Artist;
+            }
+            else
+            {
+                artistQuery = from m in _context.Song
+                              where m.Genre == SongGenre
+                              orderby m.Artist
+                              select m.Artist;
+            }
+
             var songs = from m in _context.Song
                          select m;
 
             if (!string.IsNullOrEmpty(SongGenre))
             {
-                songs = songs.Where(x => x.Genre == SongGenre);
+                ViewBag.ShowArtists = true;
+                if (SongGenre != "All") //only filter if genre isn't "All"
+                {
+                    songs = songs.Where(x => x.Genre == SongGenre);
+                }
+                if (!string.IsNullOrEmpty(SongArtist))
+                {
+                    if (SongArtist != "All") //only filter if artist isn't "All"
+                    {
+                        songs = songs.Where(x => x.Artist == SongArtist);
+                    }
+                    ViewBag.ShowSongs = true;
+                }
             }
 
-            if (!string.IsNullOrEmpty(SongArtist))
-            {
-                songs = songs.Where(x => x.Artist == SongArtist);
-            }
+            
 
             var browseSongVM = new BrowseSongViewModel
             {
@@ -195,6 +219,59 @@ namespace Assignment5.Controllers
 
             return View(browseSongVM);
 
+        }
+        //AddToCart
+        public async Task<IActionResult> AddToCart(int? id)
+        {
+            if (id == null || _context.Song == null)
+            {
+                return NotFound();
+            }
+            var song = await _context.Song
+                .FirstOrDefaultAsync(m => m.SongId == id);
+            if (song == null)
+            {
+                return NotFound();
+            }
+            if (Cart.Songs == null)
+            {
+                Cart.Songs = new List<Song>();
+            }
+            Cart.Songs.Add(song);
+            return RedirectToAction(nameof(Browse));
+        }
+
+        //ShoppingCart
+        public IActionResult ShoppingCart()
+        {
+            if (Cart.Songs == null)
+            {
+                Cart.Songs = new List<Song>();
+            }
+            decimal total = 0;
+            foreach (var song in Cart.Songs)
+            {
+                total += song.Price;
+            }
+            ViewBag.Total = total.ToString("c");
+            return View();
+        }
+
+        //Remove from Cart
+        public IActionResult RemoveFromCart(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            foreach (Song song in Cart.Songs)
+            {
+                if (song.SongId == id) {
+                    Cart.Songs.Remove(song);
+                    break;
+                }
+            }
+            return RedirectToAction(nameof(ShoppingCart));
         }
     }
 }

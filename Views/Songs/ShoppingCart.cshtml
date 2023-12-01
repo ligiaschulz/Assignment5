@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Shopping Cart</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => Cart.Songs![0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => Cart.Songs![0].Artist)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => Cart.Songs![0].Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => Cart.Songs![0].Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Cart.Songs!)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Artist)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <a asp-action="RemoveFromCart" asp-route-id="@item.SongId">Remove</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h4 align = "right"> Total: @ViewBag.Total</h4>
