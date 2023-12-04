@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\ProductDBWebContext-5dafb386-3c90-4c4f-9fa9-cbf9e22ca99c.mdf" />
+    <None Remove="Data\ProductDBWebContext-5dafb386-3c90-4c4f-9fa9-cbf9e22ca99c_log.ldf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="obj\Debug\net7.0\.NETCoreApp,Version=v7.0.AssemblyAttributes.cs" />
     <Compile Include="obj\Debug\net7.0\Assignment5.AssemblyInfo.cs" />
     <Compile Include="obj\Debug\net7.0\Assignment5.GlobalUsings.g.cs" />
